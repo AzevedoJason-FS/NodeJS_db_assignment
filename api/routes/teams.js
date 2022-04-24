@@ -50,8 +50,31 @@ newTeam.save()
 //GET Team by ID
 router.get("/:teamId", (req, res, next) => {
     const teamId = req.params.teamId;
-    
 
+    Team.findById(teamId)        
+        .lean().exec()
+        .then(result => {
+            console.log(result);
+            res.status(200).json({
+                message: "Team Successfully Found",
+                Team: {
+                    name: result.name,
+                    id: result._id,
+                metadata:{
+                    method: req.method,
+                    host: req.hostname
+                }
+                }
+            })
+        })
+        .catch(err => {
+            console.error(err.message);
+            res.status(500).json({
+                error: {
+                    message: err.message
+                }
+            })
+        });
 
 
 
