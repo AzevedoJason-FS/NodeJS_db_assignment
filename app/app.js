@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
+const mongoose = require("mongoose");
 const teamRoutes = require("../api/routes/teams");
 const playerRoutes = require("../api/routes/players");
 
@@ -53,6 +54,16 @@ app.use((error, req, res, next) => {
             method: req.method
         }
     });
+});
+
+// Connect to MongoDB
+mongoose.connect(process.env.mongoDBURL, (err) => {
+    if(err){
+        console.error("Error: ", err.message);
+    }
+    else{
+        console.log("MongoDB Connection Successful")
+    }
 });
 
 
