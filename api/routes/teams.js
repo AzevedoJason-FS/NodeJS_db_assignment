@@ -5,14 +5,28 @@ const router = express.Router();
 
 //GET all teams
 router.get("/", (req, res, next) => {
-
-
-
-
-
-
-
-
+    Team.find().lean()
+    .then(result => {
+        console.log(result);
+        res.status(200).json({
+            message: "Teams",
+            Team: {
+                name: result,
+            metadata:{
+                method: req.method,
+                host: req.hostname
+            }
+            }
+        })
+    })
+    .catch(err => {
+        console.error(err.message);
+        res.status(500).json({
+            error: {
+                message: err.message
+            }
+        })
+    });
 });
 
 router.post("/", (req, res, next) => {
@@ -52,7 +66,7 @@ router.get("/:teamId", (req, res, next) => {
     const teamId = req.params.teamId;
 
     Team.findById(teamId)        
-        .lean().exec()
+        .lean()
         .then(result => {
             console.log(result);
             res.status(200).json({
@@ -75,11 +89,6 @@ router.get("/:teamId", (req, res, next) => {
                 }
             })
         });
-
-
-
-
-
 });
 
 //PATCH(update) team by ID
@@ -120,11 +129,28 @@ router.patch("/:teamId", (req, res, next) => {
 router.delete("/:teamId", (req, res, next) => {
     const teamId = req.params.teamId;
     
-
-
-
-
-
+    Team.findByIdAndDelete(teamId)
+    .then(result => {
+        console.log(result);
+        res.status(200).json({
+            message: "Team Successfully Deleted",
+            Info:{
+                result,
+            metadata:{
+                method: req.method,
+                host: req.hostname
+            }
+            }
+        })
+    })
+    .catch(err => {
+        console.error(err.message);
+        res.status(500).json({
+            error: {
+                message: err.message
+            }
+        })
+    });
 });
 
 
