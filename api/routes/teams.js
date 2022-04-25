@@ -107,8 +107,7 @@ router.patch("/:teamId", (req, res, next) => {
         res.status(200).json({
             message: "Team Updated",
             team: {
-                name: result.name,
-                id: result._id
+               result
             },
             metadata:{
                 host: req.hostname,
