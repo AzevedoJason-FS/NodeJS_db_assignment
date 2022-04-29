@@ -30,35 +30,58 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
+
+    Team.find({
+        name: req.body.name
+    })
+    .exec()
+    .then(result => {
+        console.log(result);
+        if(result.length > 0){
+            return res.status(406).json({
+                message: "Team name has already been created"
+            })
+        }
+    
     const newTeam = new Team({
         _id: mongoose.Types.ObjectId(),
         name: req.body.name,
-    })
-
-//Write to Database
-newTeam.save()
-    .then(result => {
-        console.log(result);
-        res.status(200).json({
-            message: "Team Saved",
-            Team: {
-                name: result.name,
-                id: result._id,
-            metadata:{
-                method: req.method,
-                host: req.hostname
-            }
-            }
+    });
+    
+    //Write to Database
+    newTeam.save()
+        .then(result => {
+            console.log(result);
+            res.status(200).json({
+                message: "Team Saved",
+                Team: {
+                    name: result.name,
+                    id: result._id,
+                metadata:{
+                    method: req.method,
+                    host: req.hostname
+                }
+                }
+            })
         })
+        .catch(err => {
+            console.error(err.message);
+            res.status(500).json({
+                error: {
+                    message: err.message
+                }
+            })
+        });
+
     })
     .catch(err => {
-        console.error(err.message);
+        console.log(err.message);
         res.status(500).json({
-            error: {
-                message: err.message
+            error:{
+                message: "Unable to save record with title: "+ req.body.name
             }
         })
-    });
+    })
 });
 
 //GET Team by ID
