@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Player = require("../models/player");
 const Messages = require("../../messages/messages");
+const player = require("../models/player");
 const router = express.Router();
 
 // ============ GET ============ VALIDATION NOT WORKING
@@ -12,9 +13,9 @@ router.get("/", (req, res, next) => {
     .exec()
     .then(result => {
         console.log(result);
-        if(result.player < 0){
+        if(result.length === 0){
             return res.status(406).json({
-                message: "No players could be found"
+                message: Messages.player_all_not_found
             })
         }
         res.status(200).json({
@@ -133,6 +134,9 @@ router.patch("/:playerId", (req, res, next) => {
     }, {
         $set: updatedPlayer
     })
+    .select("name _id")
+    .populate("team", "name")
+    .exec()
     .then(result => {
         if(result.matchedCount == 0){
             return res.status(404).json({
@@ -166,12 +170,13 @@ router.delete("/:playerId", (req, res, next) => {
     Player.findByIdAndDelete({
         _id: playerId
     })
+    .select("name _id")
+    .populate("team", "name")
     .exec()
-    .then(result => {
-        console.log(result);
-             if(result < 0){
+    .then(player => {
+             if(!player){
                  return res.status(406).json({
-                     message: "Player you wish to delete does not exist"
+                     message: Messages.player_delete_not_found
                  })
              }
         res.status(200).json({
