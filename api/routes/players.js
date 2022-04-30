@@ -44,6 +44,8 @@ router.post("/", (req, res, next) => {
     Player.find({
         name: req.body.name
     })
+    .select("name _id")
+    .populate("team", "name")
     .exec()
     .then(result => {
         console.log(result);
@@ -109,8 +111,9 @@ router.get("/:playerId", (req, res, next) => {
                 message: Messages.player_not_found
             })
         }
-        res.status(201).json({
-            player: player
+        res.status(200).json({
+            message: "Player found",
+            Player: player
         })
     })
     .catch(err => {
@@ -180,7 +183,7 @@ router.delete("/:playerId", (req, res, next) => {
                  })
              }
         res.status(200).json({
-            message: "Player Deleted",
+            message: "Player Successfully Deleted",
             request: {
                 method: "GET",
                 url: "http://localhost:3000/players/" + playerId
@@ -193,9 +196,6 @@ router.delete("/:playerId", (req, res, next) => {
         })
     })
 });
-
-
-
 
 
 module.exports = router;
